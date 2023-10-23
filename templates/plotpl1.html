@@ -7,7 +7,7 @@
 <script>
 // url = 'https://iot-chair.onrender.com/'+'/data';
 url = "/data/" + '{{ filename }}';
-console.log(url);
+// console.log(url);
 
 title = 'Weight vs Time';
 xlabel = 'Time (ms)';
@@ -84,21 +84,6 @@ function doit(dv) {
 
     Plotly.newPlot("myChart", fv, layout);
 }
-
-// def getvalleys1(data, threshold, width):
-//   valleys = []
-//   numval = width
-
-//   for i in range(len(data)):
-//     if (data[i] < threshold):
-//       if (numval > 0):
-//         numval -= 1
-//         if (numval <=0):
-//           valleys.append(i)
-//     else:
-//       numval = width
-//   return valleys
-
 
 </script>
 

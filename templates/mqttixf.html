@@ -114,11 +114,19 @@
             MQTTconnect();
 
             function collect_data(which) {
-                var usr = document.forms["fcollect"]["user"].value;
+                let usr = document.forms["fcollect"]["user"].value;
+                let clas = document.forms["fcollect"]["classify"].value;
                 if (which == "Using MQTT")
-                    send_message("Q," + usr);
+                    if (clas == "no")
+                        send_message("Q," + usr);
+                    else
+                        send_message("Qc," + usr);
                 else if (which == "Using HTTP")
-                    send_message("H," + usr);
+                    if (clas == "no")
+                        send_message("H," + usr);
+                    else
+                        send_message("Hc," + usr);                
+
                 return false;
             }
 
@@ -159,24 +167,39 @@
 
     <form name="fcollect" action="" onsubmit="return collect_data(event.submitter.value)">
         <h3>Data Collection</h3>
-        &ensp;<b>1. Make sure NOTHING is on the chair before choosing below:</b><br><br>
-        &emsp;User: <input type="number" name="user" value=0 min=0 max=999 required><br><br>
-        &emsp;<input type="submit" value="Using MQTT">
-        &emsp; or &emsp;
+        &ensp;
+        <b>1. Make sure NOTHING is on the chair before choosing below:</b><br><br>
+        &emsp;
+        User: <input type="number" name="user" value=0 min=0 max=999 required>
+        &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;
+        Classify: 
+        <input type="radio" name="classify" value="on">On
+        <input type="radio" name="classify" value="off" checked>Off
+        <br><br>
+        &emsp;
+        <input type="submit" value="Using MQTT">
+        &ensp; or &ensp;
         <input type="submit" value="Using HTTP">
     </form>
     <br><br>
 
     <form name="fstart" action="" onsubmit="return send_message('S')">
-        &ensp;<b>2. Wait for prompt before pushing below:</b><br><br>
-        &emsp;<input type="submit" value="Start">
+        &ensp;
+        <b>2. Wait for prompt before pushing below:</b><br><br>
+        &emsp;
+        <input type="submit" value="Start">
     </form>
     <br><br>
 
     <form name="fclassify" action="" onsubmit="return classify_data()">
-        &ensp;<b>3. Wait for prompt before pushing below:</b><br><br>
-        &emsp; Class: <input type="number" name="class" value=0 min=0 max=99 required><br><br>
-        &emsp; <input type="submit" value="Classify">
+        &ensp;
+        <b>3. Wait for prompt before pushing below:</b><br>
+        &emsp; &ensp;
+        Not used if Classify is Off<br><br>
+        &emsp; 
+        Class: <input type="number" name="class" value=0 min=0 max=99 required><br><br>
+        &emsp; 
+        <input type="submit" value="Classify">
     </form>
 
 </body>
