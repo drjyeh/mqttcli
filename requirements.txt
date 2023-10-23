@@ -1,0 +1,6 @@
+Flask
+Gunicorn
+matplotlib
+flask_sock
+pathlib
+

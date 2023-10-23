@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+    <style>
+        #console {
+            background-color: yellow;
+            font-size: 30px;
+            font-weight: bold;
+            color: blue;
+            line-height: 140%;
+            /* white-space: pre-wrap; */
+            border: 1px solid #ccc;
+            /* height: 100px; */
+            /* overflow: scroll; */
+        }
+
+        #status {
+            background-color: red;
+            font-size: 4;
+            font-weight: bold;
+            color: white;
+            line-height: 140%;
+        }
+    </style>
+
+    <head>
+        <title>IoT Chair Control</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js"></script>
+        <h1>IoT Chair Control</h1>
+
+        <script>
+
+            var host = "broker.hivemq.com";
+            var port = 8000;
+			var pubTopic = "apu/hyeh/iotchair/v2/button";
+			var subTopic = "apu/hyeh/iotchair/v2/feedback";            
+
+            function onConnectionLost() {
+                console.log("connection lost");
+                document.getElementById("status").innerHTML = "Connection Lost";
+                connected_flag = 0;
+                MQTTconnect();
+            }
+
+            function onFailure(message) {
+                console.log("Failed");
+                document.getElementById("status").innerHTML = "Connection Failed- Retrying";
+                setTimeout(MQTTconnect, reconnectTimeout);
+            }
+
+            function onMessageArrived(r_message) {
+                console.log(r_message.payloadString);
+                document.getElementById("console").innerHTML = r_message.payloadString;
+                // var messageBody = document.querySelector('#console');
+                // messageBody.scrollTop = messageBody.scrollHeight - messageBody.clientHeight;
+            }
+
+            function onConnected(recon, url) {
+                console.log(" in onConnected " + reconn);
+            }
+
+            function sub_topics() {
+                mqtt.subscribe(subTopic);
+                return false;
+            }
+
+            function onConnect() {
+                // Once a connection has been made, make a subscription and send a message	.
+                document.getElementById("status").innerHTML = "Connected to " + host + ":" + port;
+                connected_flag = 1
+                console.log("on Connect " + connected_flag);
+                sub_topics();
+            }
+
+            function MQTTconnect() {
+                console.log("connecting to " + host + " " + port);
+				var cname = "apu-hyeh-iot-svr-1";
+                mqtt = new Paho.MQTT.Client(host, port, cname);
+                var options = {
+                    timeout: 3,
+                    onSuccess: onConnect,
+                    onFailure: onFailure,
+                };
+
+                mqtt.onConnectionLost = onConnectionLost;
+                mqtt.onMessageArrived = onMessageArrived;
+                //mqtt.onConnected = onConnected;
+
+                mqtt.connect(options);
+                return false;
+            }
+
+            function send_message(msg) {
+                if (connected_flag == 0) {
+                    out_msg = "<b>Not Connected so can't send</b>"
+                    console.log(out_msg);
+                    document.getElementById("status").innerHTML = out_msg;
+                    return false;
+                }
+
+                console.log(msg)
+
+                message = new Paho.MQTT.Message(msg);
+                message.destinationName = pubTopic;
+                mqtt.send(message);
+                return false;
+            }
+
+            var connected_flag = 0
+            var mqtt;
+            var reconnectTimeout = 2000;
+
+            MQTTconnect();
+
+            function collect_data(which) {
+                var usr = document.forms["fcollect"]["user"].value;
+                if (which == "Using MQTT")
+                    send_message("Q,"+usr);
+                else if (which == "Using HTTP")
+                    send_message("H,"+usr);
+                return false;
+            }
+
+            function change_param() {
+				var Tcol = document.forms["fchange"]["Tcollect"].value;
+				var Tsam = document.forms["fchange"]["Tsample"].value;
+                send_message("P,"+Tcol+","+Tsam);
+                return false;
+            }
+
+            function classify_data() {
+				var clas = document.forms["fclassify"]["class"].value;
+                send_message("C,"+clas);
+                return false;
+            }
+
+            // </script>
+
+        </script>
+    </head>
+
+    <div id="status">Connection Status: Not Connected</div>
+    <br>
+    </div>
+    <div>
+        <p id="console"><br></p>
+    </div>
+    <br>
+    <hr>
+    <form name="fchange" action="" onsubmit="return change_param()">
+        <h3>Change Parameters</h3>
+        &emsp;Collection Period: <input type="number" name="Tcollect" value=10 min=1 max=120 required> sec<br>
+        &emsp;Sampling Period: <input type="number" name="Tsample" value=12 min=12 max=1000 required> msec<br>
+        <br>
+        &emsp;<input type="submit" value="Change">
+    </form>
+    <br><br>  
+
+    <form name="fcollect" action="" onsubmit="return collect_data(event.submitter.value)">
+        <h3>Data Collection</h3>
+        &ensp;<b>1. Make sure NOTHING is on the chair before choosing below:</b><br><br>
+        &emsp;User: <input type="number" name="user" value=0 min=0 max=999 required><br><br>
+        &emsp;<input type="submit" value="Using MQTT">
+        &emsp; or &emsp;
+        <input type="submit" value="Using HTTP">
+    </form>
+    <br><br>
+
+    <form name="fstart" action="" onsubmit="return send_message('S')">
+        &ensp;<b>2. Wait for prompt before pushing below:</b><br><br>
+        &emsp;<input type="submit" value="Start">
+    </form>
+    <br><br>
+
+    <form name="fclassify" action="" onsubmit="return classify_data()">
+        &ensp;<b>3. Wait for prompt before pushing below:</b><br><br>
+        &emsp; Class: <input type="number" name="class" value=0 min=0 max=99 required><br><br>
+        &emsp; <input type="submit" value="Classify">
+    </form>
+
+</body>
+
+</html>

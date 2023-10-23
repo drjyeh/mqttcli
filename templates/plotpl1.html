@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<body>
+<div id="myChart" style="width:100%;max-width:600px"></div>
+
+<script>
+// url = 'https://iot-chair.onrender.com/'+'/data';
+url = "/data/" + '{{ filename }}';
+console.log(url);
+
+title = 'Weight vs Time';
+xlabel = 'Time (ms)';
+ylabel = 'Weight (0.1lb)';
+
+function getvalleys1(data, threshold, width) {
+  valleys = [];
+  numval = width;
+
+  for (i in data)
+    if (data[i] < threshold) {
+      if (numval > 0) {
+        numval -= 1;
+        if (numval <=0)
+          valleys.push(i);
+      }
+    } else
+      numval = width;
+
+  return valleys;
+}
+
+ft = fetch(url)
+    .then((response) => response.json())
+    .then((data) => doit(data));
+
+function doit(dv) {
+    xscale = dv.metadata.T_sample;
+    len = dv.data[0].data.length;
+    var xv = Array.from(Array(len), (_,i)=> i*xscale);
+    var sv = Array(len).fill(0);
+
+    fv = [];
+
+    for (i in dv.data) {
+        let ev = {
+          x: xv,
+          y: dv.data[i].data,
+          name: dv.data[i].label,
+          mode: "lines"
+        };
+        sv = sv.map((n,j) => n + dv.data[i].data[j]);
+        fv.push(ev);
+        // console.log(ev);
+    }
+
+    ev = {
+          x: xv,
+          y: sv,
+          name: "Total",
+          mode: "lines"
+    };
+    fv.push(ev);
+
+    sm = sv.reduce((a, b) => a + b, 0) / sv.length;
+    valleys = getvalleys1(sv, sm, 10);
+    valtime = valleys.map((r,i)=>r*xscale);
+
+    ev = {
+          x: valtime,
+          y: Array(valtime.length).fill(sm),
+          name: "Stands",
+          mode: "markers"
+    };
+    fv.push(ev);
+
+    console.log(fv);
+
+    const layout = {
+      xaxis: {title: xlabel},
+      yaxis: {title: ylabel},
+      title: title
+    };
+
+    Plotly.newPlot("myChart", fv, layout);
+}
+
+// def getvalleys1(data, threshold, width):
+//   valleys = []
+//   numval = width
+
+//   for i in range(len(data)):
+//     if (data[i] < threshold):
+//       if (numval > 0):
+//         numval -= 1
+//         if (numval <=0):
+//           valleys.append(i)
+//     else:
+//       numval = width
+//   return valleys
+
+
+</script>
+
+</body>
+</html>
+
