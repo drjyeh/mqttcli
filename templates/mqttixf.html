@@ -33,8 +33,8 @@
 
             var host = "broker.hivemq.com";
             var port = 8000;
-			var pubTopic = "apu/hyeh/iotchair/v2/button";
-			var subTopic = "apu/hyeh/iotchair/v2/feedback";            
+            var pubTopic = "apu/hyeh/iotchair/v2/button";
+            var subTopic = "apu/hyeh/iotchair/v2/feedback";
 
             function onConnectionLost() {
                 console.log("connection lost");
@@ -75,7 +75,7 @@
 
             function MQTTconnect() {
                 console.log("connecting to " + host + " " + port);
-				var cname = "apu-hyeh-iot-svr-1";
+                var cname = "apu-hyeh-iot-svr-1";
                 mqtt = new Paho.MQTT.Client(host, port, cname);
                 var options = {
                     timeout: 3,
@@ -116,22 +116,22 @@
             function collect_data(which) {
                 var usr = document.forms["fcollect"]["user"].value;
                 if (which == "Using MQTT")
-                    send_message("Q,"+usr);
+                    send_message("Q," + usr);
                 else if (which == "Using HTTP")
-                    send_message("H,"+usr);
+                    send_message("H," + usr);
                 return false;
             }
 
             function change_param() {
-				var Tcol = document.forms["fchange"]["Tcollect"].value;
-				var Tsam = document.forms["fchange"]["Tsample"].value;
-                send_message("P,"+Tcol+","+Tsam);
+                var Tcol = document.forms["fchange"]["Tcollect"].value;
+                var Tsam = document.forms["fchange"]["Tsample"].value;
+                send_message("P," + Tcol + "," + Tsam);
                 return false;
             }
 
             function classify_data() {
-				var clas = document.forms["fclassify"]["class"].value;
-                send_message("C,"+clas);
+                var clas = document.forms["fclassify"]["class"].value;
+                send_message("C," + clas);
                 return false;
             }
 
@@ -155,7 +155,7 @@
         <br>
         &emsp;<input type="submit" value="Change">
     </form>
-    <br><br>  
+    <br><br>
 
     <form name="fcollect" action="" onsubmit="return collect_data(event.submitter.value)">
         <h3>Data Collection</h3>
