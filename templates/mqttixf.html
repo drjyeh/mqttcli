@@ -118,13 +118,14 @@
             function collect_data(which) {
                 let usr = document.forms["fcollect"]["user"].value;
                 let clas = document.forms["fcollect"]["classify"].value;
+                console.log(clas)
                 if (which == "Using MQTT")
-                    if (clas == "no")
+                    if (clas == "off")
                         send_message("Q," + usr);
                     else
                         send_message("Qc," + usr);
                 else if (which == "Using HTTP")
-                    if (clas == "no")
+                    if (clas == "off")
                         send_message("H," + usr);
                     else
                         send_message("Hc," + usr);                

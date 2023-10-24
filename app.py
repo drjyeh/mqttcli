@@ -89,7 +89,7 @@ def hello_world():
 #     return 'Data Graphing'
     return render_template('index.html')    
 
-@app.route('/upload')
+@app.route('/upload', methods=['POST'])
 def upload_data():
     content = request.get_json()
     ret = get_data(content)
@@ -136,7 +136,6 @@ def con():
 @app.route('/mqttixf')
 def cmd():
     return render_template('mqttixf.html')
-
 
 
 @app.route('/plotmt/<filename>')
