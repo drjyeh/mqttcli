@@ -89,7 +89,7 @@ def hello_world():
 #     return 'Data Graphing'
     return render_template('index.html')    
 
-@app.route('/upload', methods=['POST'])
+@app.route('/upload')
 def upload_data():
     content = request.get_json()
     ret = get_data(content)
