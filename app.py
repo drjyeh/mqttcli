@@ -99,6 +99,7 @@ def upload_data():
 def data_dir():
     # Show directory contents
     files = os.listdir(datafolder)
+    files = sorted(files)
     return render_template('files.html', files=files, title='Open Data File')
 
 @app.route('/data/<filename>')
@@ -111,6 +112,7 @@ def data_show(filename):
 def valleys_dir():
     # Show directory contents
     files = os.listdir(datafolder)
+    files = sorted(files)
     return render_template('files.html', files=files, title='Get Valleys of Data File')
 
 @app.route('/valleys/<filename>')
