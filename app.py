@@ -19,12 +19,8 @@ xscale = 12
 title = 'Weight vs Time'
 xlabel = "Time (ms)"
 ylabel = "Weight (0.1lb)"
-# url = 'https://hyeh.pythonanywhere.com/data'
-# url = 'http://127.0.0.1:5000/data'
-# path = '/data'
 THIS_FOLDER = Path(__file__).parent.resolve()
 datafolder = THIS_FOLDER / "uploads/"
-# datafile = "./uploads/sample.json"
 
 
 def getvalleys1(data, threshold, width):
@@ -93,25 +89,23 @@ def hello_world():
 #     return 'Data Graphing'
     return render_template('index.html')    
 
+@app.route('/upload', methods=['POST'])
+def upload_data():
+    content = request.get_json()
+    ret = get_data(content)
+    return jsonify({ret: True})
+
+@app.route('/data')
+def data_dir():
+    # Show directory contents
+    files = os.listdir(datafolder)
+    return render_template('files.html', files=files, title='Open Data File')
 
 @app.route('/data/<filename>')
-def data_dir(filename):
-        with open(datafolder/f'{filename}', "r") as infile:
-          content = json.load(infile)
-        return jsonify(content)
-
-@app.route('/data', methods=['GET','POST'])
-def proc_data():
-    if request.method == 'POST':
-        content = request.get_json()
-        ret = get_data(content)
-        return jsonify({ret: True})
-
-    # Show directory contents
-    if request.method == 'GET':
-    # Show directory contents
-        files = os.listdir(datafolder)
-        return render_template('files.html', files=files, title='Open Data File')
+def data_show(filename):
+    with open(datafolder/f'{filename}', "r") as infile:
+        content = json.load(infile)
+    return jsonify(content)
 
 @app.route('/valleys')
 def valleys_dir():
