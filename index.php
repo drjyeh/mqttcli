@@ -46,10 +46,10 @@ function get_data($payload) {
             while (file_exists($datafile = $datafolder.sprintf("sample%03d-%03d.json",$user,$i)))
                 $i += 1;
 
-            file_put_contents($datafile, json_encode($content));
+            $ret = file_put_contents($datafile, json_encode($content));
             $_SESSION['metadata'] = array();
             $_SESSION['data'] = array();
-            return "saved";
+            return "saved[".$ret."]";
         } else
             return "unknown command";
     	break;

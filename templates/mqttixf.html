@@ -30,6 +30,7 @@
         <h1>IoT Chair Control</h1>
 
         <script>
+            urlupload = window.location.protocol + "//" + window.location.host + "/upload";
 
             var host = "broker.hivemq.com";
             // var port = 8000;
@@ -119,6 +120,9 @@
                 let usr = document.forms["fcollect"]["user"].value;
                 let clas = document.forms["fcollect"]["classify"].value;
                 console.log(clas)
+
+                send_message("U," + urlupload);
+                
                 if (which == "Using MQTT")
                     if (clas == "off")
                         send_message("Q," + usr);
