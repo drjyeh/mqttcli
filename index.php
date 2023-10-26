@@ -29,6 +29,18 @@ function getvalleys1($data, $threshold, $width) {
 
 }
 
+function getderiv($data) {
+    $len = count($data);
+    $deriv = array_pad(array(), $len, 0);
+
+    for ($i = 0; $i < $len-1; $i++) {
+        $deriv[$i] = $data[$i+1] - $data[$i];
+    }
+
+    return $deriv;
+
+}
+
 function get_data($payload) {
 	global $datafolder;
 	
@@ -123,11 +135,40 @@ switch ($req['path']) {
                 }
             }
     
-            $valleys = getvalleys1($sv, array_sum($sv) / $len, 10);
+            // $valleys = getvalleys1($sv, array_sum($sv) / $len, 10);
+            $valleys = getvalleys1($sv, array_sum($sv) / $len, 1);
             header('Content-Type: application/json');
             echo json_encode($valleys);
         }
         break;
+
+        case '/deriv':
+            if (!isset($req['query'])) {
+                // $directory = "./uploads/";
+                $phpfiles = glob($datafolder . "*");
+                header('Content-Type: text/html');
+                foreach($phpfiles as $phpfile)
+                {
+                    echo "<a href=/deriv?".$phpfile.">".basename($phpfile)."</a><br>";
+                }
+            } else {
+                $html = file_get_contents($req['query']);
+                $dv = json_decode($html, true);
+                $len = count($dv['data'][0]['data']);
+    
+                $sv = array_pad(array(), $len, 0);
+                foreach ($dv['data'] as $i) {
+                    for ($j = 0; $j < $len; $j++) {
+                        $sv[$j] = 
+                            $sv[$j] + $i['data'][$j];
+                    }
+                }
+        
+                $deriv = getderiv($sv);
+                header('Content-Type: application/json');
+                echo json_encode($deriv);
+            }
+            break;
 
     case '/mqttcon':
         header('Content-Type: text/html');
@@ -149,6 +190,7 @@ switch ($req['path']) {
         readfile('./html/linegl.html');
         break;
 
+    case '/plotderiv':
     case '/plotct':
     case '/plotgl':
     case '/plotpl':
