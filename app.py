@@ -37,6 +37,14 @@ def getvalleys1(data, threshold, width):
       numval = width
   return valleys
 
+def getderiv(data):
+    deriv = [0]
+
+    for i in range(len(data)-1):
+        deriv.append(data[i+1] - data[i])
+
+    return deriv
+
 #{"metadata":{...}, "data":[]}
 
 def get_data(payload):
@@ -108,6 +116,30 @@ def data_show(filename):
         content = json.load(infile)
     return jsonify(content)
 
+@app.route('/deriv')
+def deriv_dir():
+    # Show directory contents
+    files = os.listdir(datafolder)
+    files = sorted(files)
+    return render_template('files.html', files=files, title='Plot Rate of Change')
+
+@app.route('/deriv/<filename>')
+def deriv(filename):
+    with open(datafolder/f'{filename}', "r") as infile:
+        content = json.load(infile)
+
+    xscale = content['metadata']['T_sample']
+    data = content['data']
+
+    dtasum = [0] * len(data[0]['data'])
+    for pkg in data:
+        dtasum = [dtasum[i] + pkg['data'][i] for i in range(len(dtasum))]
+
+    deriv = getderiv(dtasum)
+
+    return jsonify(deriv)
+
+
 @app.route('/valleys')
 def valleys_dir():
     # Show directory contents
@@ -127,7 +159,7 @@ def valleys(filename):
     for pkg in data:
         dtasum = [dtasum[i] + pkg['data'][i] for i in range(len(dtasum))]
 
-    valleys = getvalleys1(dtasum, sum(dtasum)/len(dtasum), 10)
+    valleys = getvalleys1(dtasum, sum(dtasum)/len(dtasum), 1)
 
     return jsonify(valleys)
 
@@ -157,7 +189,7 @@ def plotmt(filename):
         dtasum = [dtasum[i] + pkg['data'][i] for i in range(len(dtasum))]
     axis.plot([i*xscale for i in range(len(pkg['data']))], dtasum, label='total')
 
-    valleys = getvalleys1(dtasum, sum(dtasum)/len(dtasum), 10)
+    valleys = getvalleys1(dtasum, sum(dtasum)/len(dtasum), 1)
     valtime = [i*xscale for i in valleys]
     axis.scatter(valtime, [sum(dtasum)/len(dtasum)] * len(valleys))
 
@@ -168,6 +200,10 @@ def plotmt(filename):
     output = io.BytesIO()
     FigureCanvas(fig).print_png(output)
     return Response(output.getvalue(), mimetype='image/png') 
+
+@app.route('/plotderiv/<filename>')
+def plotderiv(filename):
+    return render_template('plotderiv.html', filename=filename)
 
 @app.route('/plotpl/<filename>')
 def plotpl(filename):
@@ -185,6 +221,7 @@ def plotct(filename):
 def plotgl(filename):
     return render_template('plotgl.html', filename=filename)
 
+@app.route('/plotderiv')
 @app.route('/plotmt')
 @app.route('/plotgl')
 @app.route('/plotct')

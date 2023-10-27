@@ -69,12 +69,12 @@ function get_data($payload) {
     case 'metadata':
         $_SESSION['metadata'] = $payload['metadata'];
         $_SESSION['data'] = array();
-        return "metadata received";
+        return "metadata received[".count($payload['metadata'])."]";
         break;
         
     case 'data':
         array_push($_SESSION['data'], $payload['data']);
-        return "data added";
+        return "data added[".count($payload['data'])."]";
         break;
         
     default:

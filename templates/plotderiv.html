@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
@@ -6,9 +5,10 @@
 <div id="myChart" style="width:100%;max-width:600px"></div>
 
 <script>
-urldata = window.location.protocol + "//" + window.location.host + "/data?" + filename;
-urlderiv = window.location.protocol + "//" + window.location.host + "/deriv?" + filename;
-urlvalleys = window.location.protocol + "//" + window.location.host + "/valleys?" + filename;
+urldata = window.location.protocol + "//" + window.location.host + "/data/" + '{{ filename }}';
+urlderiv = window.location.protocol + "//" + window.location.host + "/deriv/" + '{{ filename }}';
+urlvalleys = window.location.protocol + "//" + window.location.host + "/valleys/" + '{{ filename }}';
+
 
 title = 'Weight vs Time';
 xlabel = 'Time (ms)';
