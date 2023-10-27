@@ -46,14 +46,6 @@ function get_data(payload) {
             if (payload['command'] == 'save') {
                 let content = { "metadata": metadata, "data": data };
 
-                // if (isset($_SESSION['metadata']['user']))
-                //     $user = $_SESSION['metadata']['user'];
-                // else
-                //     $user = 0;
-
-                // $i = 0;
-                // while (file_exists($datafile = $datafolder.sprintf("sample%03d-%03d.json", $user, $i)))
-                //     $i += 1;
                 let user;
 
                 if (content.metadata.user == null)
@@ -65,10 +57,11 @@ function get_data(payload) {
                 let datafile;
                 do {
                     datafile = datafolder + "sample" + 
-                                String(user).padStart(4, '0') + "-" +
-                                String(i).padStart(4, '0') + ".json";
+                                String(user).padStart(3, '0') + "-" +
+                                String(i).padStart(3, '0') + ".json";
+                    console.log(datafile);
                     i = i + 1;
-                } while (fs.existsSync(datafolder));
+                } while (fs.existsSync(datafile));
 
                 fs.writeFile(datafile, JSON.stringify(content), (err) => {
                     if (err)
@@ -147,7 +140,7 @@ const server = http.createServer((req, res) => {
                 let content = JSON.parse(body);
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 let ret = get_data(content);
-                res.write(JSON.stringify({ ret: true }));
+                res.write(JSON.stringify( { return : ret} ));
                 return res.end();
             });
 
