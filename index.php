@@ -1,5 +1,5 @@
 <?php
-
+session_id('iot-chair-v2');
 session_start();
 
 if (!array_key_exists('metadata', $_SESSION))
@@ -59,6 +59,7 @@ function get_data($payload) {
                 $i += 1;
 
             $ret = file_put_contents($datafile, json_encode($content));
+            // session_unset();
             $_SESSION['metadata'] = array();
             $_SESSION['data'] = array();
             return "saved[".$ret."]";
